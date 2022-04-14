@@ -386,7 +386,7 @@ const loa = {
       return {exist_win: true, player: next_turn}; // next_turn wins
   },
 
-  play: function(game_state, turn, play) {
+  _play: function(game_state, turn, play) {
     if (game_state.turn != turn) {
       game_state.error = "Turns dont match."; 
       return game_state;
@@ -405,6 +405,13 @@ const loa = {
     board[last[0]][last[1]] = '.';
     board[next[0]][next[1]] = turn;
     return {"board": board, "turn": this.get_next_turn_symbol(game_state)};
+  },
+
+  play: function(game_state, turn, play) {
+    let playres = this._play(game_state, turn, play);
+    let winres  = this.win(game_state);
+    const res = Object.assign(playres, winres);
+    return res;
   }
 }
 
