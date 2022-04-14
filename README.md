@@ -5,8 +5,8 @@ It's a classic board game. Played by two "people", on a 8x8 board.
 Read the rules (http://www.iggamecenter.com/info/en/loa.html)[http://www.iggamecenter.com/info/en/loa.html]
 
 ## Roadmap 
-[] base engine
-[]   - win logic missing
+[X] base engine
+[X]   - win logic missing
 [] html visuals
 [] html/js logic
 [] ai
