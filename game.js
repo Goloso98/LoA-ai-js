@@ -288,6 +288,104 @@ const loa = {
     return new_board;
   },
 
+  count: function(game_state) {
+    let counts = {};
+    let board = game_state.board;
+    for (let i = 0; i < this.board_size; i++)
+      for (let j = 0; j < this.board_size; j++) {
+        let car = board[i][j];
+        if (!(car in counts))
+          counts[car] = 0;
+        counts[car]++;
+      }
+    return counts;
+  },
+
+  _split_pos: function(pos) { return {'x': Math.trunc(pos/this.board_size), 'y': (pos - (this.board_size * Math.trunc(pos/this.board_size)))};},
+
+  _win_blob: function(game_state, turn) {
+    // use "absolute" array possition, a list isnot consistent hashable, like numbers.
+    // choose the first elememt to start the bfs visit
+    let pos = -1;
+    let board = game_state.board;
+    for (let i = 0; pos < 0 && i < this.board_size; i++)
+      for (let j = 0; pos < 0 && j < this.board_size; j++)
+        if (board[i][j] == turn)
+          pos = i * this.board_size + j;
+
+    if (pos < 0) // no piece matching the turn was found
+      return 0;
+
+    let gen_neigh = function(pos) {
+      let x = this._split_pos(pos).x;
+      let y = this._split_pos(pos).y;
+      // console.log(board[x][y], this.board_size, this._split_pos(10));
+      // console.log(x, y);
+      let neigh = [];
+      for (let ii = -1; ii < 2; ii++)
+        for (let jj = -1; jj < 2; jj++) {
+          if (ii == 0 && jj == 0)
+            continue;
+          let i = x + ii;
+          let j = y + jj;
+          if (i < 0 || i >= this.board_size || j < 0 || j >= this.board_size)
+            continue;
+          if (board[i][j] == turn)
+            neigh.push(i * this.board_size + j);
+        };
+      return neigh;
+    };
+    // console.log(gen_neigh.call(this));
+    const visited = new Set();
+    let stack = [];
+
+    stack.push(pos);
+    while (stack.length > 0) {
+      let cur = stack.pop();
+      if (!visited.has(cur)) {
+        visited.add(cur);
+        let neighs = gen_neigh.call(this, cur);
+        for (let neigh = 0; neigh < neighs.length; neigh++) {
+          let nei = neighs[neigh];
+          if (!visited.has(nei))
+            stack.push(nei);
+        };
+      };
+    };
+    // console.log(visited.size);
+    return visited.size;
+  },
+
+  win: function(game_state) {
+    // return {exist_win: bool, player: 'B'/null}
+    // exist_win: false -> player null
+    // exist_win: true -> player_turn
+    // or draw exist_win: true -> null
+    let count = this.count(game_state);
+    let blobs = {}; // blobs[turn] will be set (to the size of the blob) if its in a end state, -1 otherwise;
+    blobs[game_state.turn] = -1;
+    blobs[this.get_next_turn_symbol(game_state)] = -1;
+
+    for (let turn in blobs) {
+      blobs[turn] = this._win_blob(game_state, turn);
+      if (blobs[turn] != count[turn])
+        blobs[turn] = -1;
+    };
+
+    let this_turn = game_state.turn;
+    let next_turn = this.get_next_turn_symbol(game_state);
+    if (blobs[this_turn] < 0 && blobs[next_turn] < 0)
+      return {exist_win: false, player: null}; // no win yet
+
+    if (blobs[this_turn] == blobs[next_turn])
+      return {exist_win: true, player: null}; // draw
+
+    if (blobs[this_turn] > blobs[next_turn])
+      return {exist_win: true, player: this_turn}; // this_turn wins
+    else
+      return {exist_win: true, player: next_turn}; // next_turn wins
+  },
+
   play: function(game_state, turn, play) {
     if (game_state.turn != turn) {
       game_state.error = "Turns dont match."; 
