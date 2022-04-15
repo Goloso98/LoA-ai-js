@@ -28,6 +28,7 @@ const loa = {
   },
 
   get_next_turn_symbol: function(game_state) { return  game_state.turn == 'B' ? 'W' : 'B'; },
+  _get_next_turn_symbol: function(turn) { return  turn == 'B' ? 'W' : 'B'; },
 
   is_inside_bounds: function(cell) { return cell.y >= 0 && cell.x >= 0 && cell.y < this.board_size && cell.x < this.board_size; },
 
@@ -254,6 +255,8 @@ const loa = {
     let moves = [];
     if (game_state.turn != turn)
       return moves;
+    if (this.endgame(game_state))
+      return moves;
 
     for (let i = 0; i < this.board_size; i++)
       for (let j = 0; j < this.board_size; j++)
@@ -386,6 +389,10 @@ const loa = {
       return {exist_win: true, player: next_turn}; // next_turn wins
   },
 
+  endgame: function(game_state) {
+    let win = this.win(game_state);
+    return win.exist_win;
+  },
   _play: function(game_state, turn, play) {
     if (game_state.turn != turn) {
       game_state.error = "Turns dont match."; 
