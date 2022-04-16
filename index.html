@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
   <script>
-    function fn(n){console.log(n)};
+    function fn(n){myclick(n);};
   </script>
   <style>
     .piece {
@@ -54,15 +54,15 @@
 <body style="background-color:black;">
 	<script src=game.js></script>
 	<script src=ai.js></script>
-	<script src=testes.js></script>
+	<!--script src=testes.js></script-->
 	<script src=app.js></script>
 	<!--script src=test2.js></script-->
 
 <div class="board">
   <div class="grid-container">
-    <div class="grid-item" onclick="fn(0)"><div class="piece" id="0"></div></div>
-    <div class="grid-item" onclick="fn(1)"><div class="piece piecewhite" id="1"></div></div>
-    <div class="grid-item" onclick="fn(2)"><div class="piece pieceblack" id="2"></div></div>
+    <div class="grid-item" onclick="fn(0)"><div id="0"></div></div>
+    <div class="grid-item" onclick="fn(1)"><div id="1"></div></div>
+    <div class="grid-item" onclick="fn(2)"><div id="2"></div></div>
     <div class="grid-item" onclick="fn(3)"><div id="3"></div></div>
     <div class="grid-item" onclick="fn(4)"><div id="4"></div></div>
     <div class="grid-item" onclick="fn(5)"><div id="5"></div></div>
@@ -127,9 +127,22 @@
   </div>
   </div>
 <div id="info" style="display: flex;">
-<p>turn:</p>
-<div style="height: 30px; width: 30px;" class="piece"></div>
+<p>Start a new game!</p>
+<div style="height: 30px; width: 30px;" class=""></div>
 </div>
+
+<p>Player1:</p>
+<select id='p1ai'>
+  <option value='random'>Random</option>
+  <option value='minmax'>Minmax</option>
+</select>
+<p>Player2:</p>
+<select id='p2ai'>
+  <option value='random'>Random</option>
+  <option value='minmax'>Minmax</option>
+</select>
+<br>
+<br>
 <button onclick="newgame()">new game</button>
 </body>
 	
