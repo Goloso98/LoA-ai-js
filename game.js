@@ -291,6 +291,10 @@ const loa = {
     return new_board;
   },
 
+  duplicate: function(game_state) {
+    return {'board': loa._board_copy(game_state.board), 'turn': game_state.turn};
+  },
+
   count: function(game_state) {
     let counts = {};
     let board = game_state.board;
