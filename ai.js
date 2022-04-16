@@ -141,7 +141,7 @@ const ai = {
       const new_game_state = loa.play(game_state, game_state.turn, move);
       if (loa.win(new_game_state).player == game_state.turn)
         return {'move': move, 'heuristic': heuristic(new_game_state, game_state.turn)};
-      const currval = ai._alphabeta_min(new_game_state, -Infinity, Infinity, depth-1, heuristic);
+      const currval = ai._alphabeta_max(new_game_state, -Infinity, Infinity, depth-1, heuristic);
       if (currval > bestval) {
         bestval = currval;
         bestmove = move;

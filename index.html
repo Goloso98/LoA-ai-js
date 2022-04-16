@@ -2,12 +2,135 @@
 <html>
 <head>
 	<meta charset="UTF-8">
+  <script>
+    function fn(n){console.log(n)};
+  </script>
+  <style>
+    .piece {
+      background-color: red;
+      width: 80%;
+      height: 80%;
+      border-radius: 50%;
+    }
+    
+    .piecewhite {
+      background: linear-gradient(145deg, #f6cfa6, #fff) !important;
+    }
+
+    .pieceblack {
+      background: linear-gradient(145deg, red, #111) !important;
+    }
+    
+    .board {
+      width: 800px;
+    }
+    
+    .active {
+      background-color: green;
+    }
+    
+    .move {
+      background-color: yellow;
+    }
+
+    .grid-container {
+      height: 100%;
+      display: grid;
+      grid-template-columns: repeat(8, auto);
+      backgroud-color: red;
+      padding: 10px;
+      aspect-ratio: 1/1;
+    }
+    
+    .grid-item {
+      backgroud-color: gray;
+      border: 1px solid white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
 </head>
 <body style="background-color:black;">
 	<script src=game.js></script>
 	<script src=ai.js></script>
 	<script src=testes.js></script>
+	<script src=app.js></script>
 	<!--script src=test2.js></script-->
+
+<div class="board">
+  <div class="grid-container">
+    <div class="grid-item" onclick="fn(0)"><div class="piece" id="0"></div></div>
+    <div class="grid-item" onclick="fn(1)"><div class="piece piecewhite" id="1"></div></div>
+    <div class="grid-item" onclick="fn(2)"><div class="piece pieceblack" id="2"></div></div>
+    <div class="grid-item" onclick="fn(3)"><div id="3"></div></div>
+    <div class="grid-item" onclick="fn(4)"><div id="4"></div></div>
+    <div class="grid-item" onclick="fn(5)"><div id="5"></div></div>
+    <div class="grid-item" onclick="fn(6)"><div id="6"></div></div>
+    <div class="grid-item" onclick="fn(7)"><div id="7"></div></div>
+    <div class="grid-item" onclick="fn(8)"><div id="8"></div></div>
+    <div class="grid-item" onclick="fn(9)"><div id="9"></div></div>
+    <div class="grid-item" onclick="fn(10)"><div id="10"></div></div>
+    <div class="grid-item" onclick="fn(11)"><div id="11"></div></div>
+    <div class="grid-item" onclick="fn(12)"><div id="12"></div></div>
+    <div class="grid-item" onclick="fn(13)"><div id="13"></div></div>
+    <div class="grid-item" onclick="fn(14)"><div id="14"></div></div>
+    <div class="grid-item" onclick="fn(15)"><div id="15"></div></div>
+    <div class="grid-item" onclick="fn(16)"><div id="16"></div></div>
+    <div class="grid-item" onclick="fn(17)"><div id="17"></div></div>
+    <div class="grid-item" onclick="fn(18)"><div id="18"></div></div>
+    <div class="grid-item" onclick="fn(19)"><div id="19"></div></div>
+    <div class="grid-item" onclick="fn(20)"><div id="20"></div></div>
+    <div class="grid-item" onclick="fn(21)"><div id="21"></div></div>
+    <div class="grid-item" onclick="fn(22)"><div id="22"></div></div>
+    <div class="grid-item" onclick="fn(23)"><div id="23"></div></div>
+    <div class="grid-item" onclick="fn(24)"><div id="24"></div></div>
+    <div class="grid-item" onclick="fn(25)"><div id="25"></div></div>
+    <div class="grid-item" onclick="fn(26)"><div id="26"></div></div>
+    <div class="grid-item" onclick="fn(27)"><div id="27"></div></div>
+    <div class="grid-item" onclick="fn(28)"><div id="28"></div></div>
+    <div class="grid-item" onclick="fn(29)"><div id="29"></div></div>
+    <div class="grid-item" onclick="fn(30)"><div id="30"></div></div>
+    <div class="grid-item" onclick="fn(31)"><div id="31"></div></div>
+    <div class="grid-item" onclick="fn(32)"><div id="32"></div></div>
+    <div class="grid-item" onclick="fn(33)"><div id="33"></div></div>
+    <div class="grid-item" onclick="fn(34)"><div id="34"></div></div>
+    <div class="grid-item" onclick="fn(35)"><div id="35"></div></div>
+    <div class="grid-item" onclick="fn(36)"><div id="36"></div></div>
+    <div class="grid-item" onclick="fn(37)"><div id="37"></div></div>
+    <div class="grid-item" onclick="fn(38)"><div id="38"></div></div>
+    <div class="grid-item" onclick="fn(39)"><div id="39"></div></div>
+    <div class="grid-item" onclick="fn(40)"><div id="40"></div></div>
+    <div class="grid-item" onclick="fn(41)"><div id="41"></div></div>
+    <div class="grid-item" onclick="fn(42)"><div id="42"></div></div>
+    <div class="grid-item" onclick="fn(43)"><div id="43"></div></div>
+    <div class="grid-item" onclick="fn(44)"><div id="44"></div></div>
+    <div class="grid-item" onclick="fn(45)"><div id="45"></div></div>
+    <div class="grid-item" onclick="fn(46)"><div id="46"></div></div>
+    <div class="grid-item" onclick="fn(47)"><div id="47"></div></div>
+    <div class="grid-item" onclick="fn(48)"><div id="48"></div></div>
+    <div class="grid-item" onclick="fn(49)"><div id="49"></div></div>
+    <div class="grid-item" onclick="fn(50)"><div id="50"></div></div>
+    <div class="grid-item" onclick="fn(51)"><div id="51"></div></div>
+    <div class="grid-item" onclick="fn(52)"><div id="52"></div></div>
+    <div class="grid-item" onclick="fn(53)"><div id="53"></div></div>
+    <div class="grid-item" onclick="fn(54)"><div id="54"></div></div>
+    <div class="grid-item" onclick="fn(55)"><div id="55"></div></div>
+    <div class="grid-item" onclick="fn(56)"><div id="56"></div></div>
+    <div class="grid-item" onclick="fn(57)"><div id="57"></div></div>
+    <div class="grid-item" onclick="fn(58)"><div id="58"></div></div>
+    <div class="grid-item" onclick="fn(59)"><div id="59"></div></div>
+    <div class="grid-item" onclick="fn(60)"><div id="60"></div></div>
+    <div class="grid-item" onclick="fn(61)"><div id="61"></div></div>
+    <div class="grid-item" onclick="fn(62)"><div id="62"></div></div>
+    <div class="grid-item" onclick="fn(63)"><div id="63"></div></div>
+  </div>
+  </div>
+<div id="info" style="display: flex;">
+<p>turn:</p>
+<div style="height: 30px; width: 30px;" class="piece"></div>
+</div>
+<button onclick="newgame()">new game</button>
 </body>
 	
 </html>
