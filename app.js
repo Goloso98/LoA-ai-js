@@ -2,11 +2,12 @@ var loa_1 = null;
 var player1 = 'random';
 var player2 = 'random';
 function newgame() {
-  player1 = document.getElementbyId("p1ai").value;
-  player2 = document.getElementbyId("p2ai").value;
+  player1 = document.getElementById("p1ai").value;
+  player2 = document.getElementById("p2ai").value;
   clearboard();
   loa_1 = loa.new_board();
   draw();
+  startgame();
 }
 
 function draw() {
@@ -69,7 +70,15 @@ function myclick(n) {
 }
 
 
-function startgame() {
+async function startgame() {
+  console.log(player1, player2);
+  let go = false;
+  while (go) {
+    console.log('in');
+    let p1 = document.getElementById("p1ai").value;
+    let p2 = document.getElementById("p2ai").value;
+    //go = p1 == p2;
+  };
   return;
 }
 
