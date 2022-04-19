@@ -14,11 +14,11 @@
     }
     
     .piecewhite {
-      background: linear-gradient(145deg, #f6cfa6, #fff) !important;
+      background: linear-gradient(145deg,lightgrey, grey) !important;
     }
 
     .pieceblack {
-      background: linear-gradient(145deg, red, #111) !important;
+      background: linear-gradient(145deg, red, #800000) !important;
     }
     
     .board {
@@ -37,17 +37,29 @@
       height: 100%;
       display: grid;
       grid-template-columns: repeat(8, auto);
-      backgroud-color: red;
+      background-color: #6E260E;
       padding: 10px;
       aspect-ratio: 1/1;
     }
     
     .grid-item {
-      backgroud-color: gray;
-      border: 1px solid white;
+      background-color: #CC9966;
+      border: 1px solid #B87333;
       display: flex;
       align-items: center;
       justify-content: center;
+    }
+
+
+    .grid-item:nth-child(16n+1),
+    .grid-item:nth-child(16n+3),
+    .grid-item:nth-child(16n+5),
+    .grid-item:nth-child(16n+7),
+    .grid-item:nth-child(16n+10),
+    .grid-item:nth-child(16n+12),
+    .grid-item:nth-child(16n+14),
+    .grid-item:nth-child(16n+16) {
+      background-color: beige;
     }
   </style>
 </head>
