@@ -82,3 +82,21 @@ async function startgame() {
   return;
 }
 
+const big_game_dict = {};
+function handle_game(myevent) {
+  //check the event
+  // check if is a new game start...
+  //check if game is on var
+
+  //check if p1 has played
+    //check who is to play
+      // if player; handle the first key input... then on the next call handle the second key input
+
+  //check if is p2 turn...
+    //repet p1 steps...
+
+  //check wins
+
+  
+}
+
