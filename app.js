@@ -11,7 +11,7 @@ function newgame() {
 }
 
 function draw() {
-  clearboard();
+  //clearboard();
   if (!loa_1) return;
   let board = loa_1.board;
   let size = 8;
@@ -65,10 +65,43 @@ function clearboard() {
 
 function myclick(n) {
   console.log('a', n);
+  clearPossibleMoves();
+  //console.log(document.getElementsByClassName("grid-item")[n]);
   if (!loa_1 || loa_1.existe_win) return;
-  
+  let board = loa_1.board;
+
+  let pieceX = Math.floor(n/8);
+  let pieceY = Math.floor(n%8);
+  console.log(pieceX);
+  console.log(pieceY);
+  let piece = board[pieceX][pieceY];
+  console.log(piece);
+  if(piece == 'B') {
+    let possibleMoves = loa.get_piece_moves({'board':board, turn: 'B'}, {'x':pieceX, 'y':pieceY}, 'B');
+    console.log(possibleMoves);
+    for(let i = 0; i < possibleMoves.length; i++) {
+      let x = possibleMoves[i][0];
+      let y = possibleMoves[i][1];
+      console.log(possibleMoves[i][0] + ' ' + possibleMoves[i][1]);
+      let pos = x*8 + y;
+      console.log(pos);
+      if(document.getElementById(pos).className == "") {
+        document.getElementById(pos).className = "piece possibleBlack";
+      }
+    }
+  }
 }
 
+
+function clearPossibleMoves() {
+  let board = document.getElementsByClassName("board")[0].children[0];
+  for (let c of board.children) {
+    if(c.children[0].className == "piece possibleBlack" || c.children[0].className == "piece possibleWhite") {
+      c.className = "grid-item";
+      c.children[0].className = "";
+    }
+  }
+}
 
 async function startgame() {
   console.log(player1, player2);
