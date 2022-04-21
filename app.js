@@ -83,7 +83,6 @@ function myclick(n) {
     if(piece == 'B') {
       clearPossibleMoves();
       draw();
-      info();
       nTracker = n;
       console.log(nTracker + ' ntracker');
       let possibleMoves = loa.get_piece_moves({'board':board, turn: 'B'}, {'x':pieceX, 'y':pieceY}, 'B');
@@ -107,18 +106,17 @@ function myclick(n) {
       console.log(oldX + ' ' + oldY + ' ' + nTracker);
       loa_1.board[oldX][oldY] = '.';
       loa_1.board[pieceX][pieceY] = 'B';
-
+      console.log(loa_1.board[oldX][oldY]);
+      document.getElementById(nTracker).className = "";
       clearPossibleMoves();
       loa_1.turn = 'W';
       draw();
-      info();
     }
   } else {
   
     if(piece == 'W') {
       clearPossibleMoves();
       draw();
-      info();
       nTracker = n;
       console.log(nTracker + ' ntracker');
       let possibleMoves = loa.get_piece_moves({'board':board, turn: 'W'}, {'x':pieceX, 'y':pieceY}, 'W');
@@ -143,11 +141,11 @@ function myclick(n) {
       console.log(oldX + ' ' + oldY + ' ' + nTracker);
       loa_1.board[oldX][oldY] = '.';
       loa_1.board[pieceX][pieceY] = 'W';
-
+      console.log(loa_1.board[oldX][oldY]);
+      document.getElementById(nTracker).className = "";
       clearPossibleMoves();
       loa_1.turn = 'B';
       draw();
-      info();
     }
   }
 }
