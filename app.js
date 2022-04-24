@@ -103,13 +103,9 @@ function myclick(n) {
 
       let oldX = Math.floor(nTracker/8);
       let oldY = Math.floor(nTracker%8);
-      console.log(oldX + ' ' + oldY + ' ' + nTracker);
-      loa_1.board[oldX][oldY] = '.';
-      loa_1.board[pieceX][pieceY] = 'B';
-      console.log(loa_1.board[oldX][oldY]);
+      loa_1 = loa.play(loa_1, 'B', [[oldX, oldY], [pieceX, pieceY]]);
       document.getElementById(nTracker).className = "";
       clearPossibleMoves();
-      loa_1.turn = 'W';
       draw();
     }
   } else {
@@ -138,13 +134,9 @@ function myclick(n) {
 
       let oldX = Math.floor(nTracker/8);
       let oldY = Math.floor(nTracker%8);
-      console.log(oldX + ' ' + oldY + ' ' + nTracker);
-      loa_1.board[oldX][oldY] = '.';
-      loa_1.board[pieceX][pieceY] = 'W';
-      console.log(loa_1.board[oldX][oldY]);
+      loa_1 = loa.play(loa_1, 'W', [[oldX, oldY], [pieceX, pieceY]]);
       document.getElementById(nTracker).className = "";
       clearPossibleMoves();
-      loa_1.turn = 'B';
       draw();
     }
   }
