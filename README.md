@@ -34,3 +34,5 @@ When you open the page there's a board and under it the options of how you want 
 - AI vs AI
 
 The AI has 4 different levels Easy, Medium, Hard and Very Hard.
+
+After choosing how you want to play simply click on the "New Game" button and you can start the game!
