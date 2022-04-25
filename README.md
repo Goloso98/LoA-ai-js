@@ -2,7 +2,7 @@
 
 It's a classic board game. Played by two "people", on a 8x8 board.
 
-Read the rules (http://www.iggamecenter.com/info/en/loa.html)[http://www.iggamecenter.com/info/en/loa.html]
+[Read the rules here](http://www.iggamecenter.com/info/en/loa.html)
 
 ## Roadmap 
 - [X] base engine

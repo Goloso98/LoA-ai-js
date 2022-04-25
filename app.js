@@ -104,7 +104,13 @@ function getaicb(level) {
     case 2:
       return (game_board) => ai.minmax(game_board, 2, ai.heuristic);
     case 3:
-      return (game_board) => ai.minmax(game_board, 4, ai.heuristic);
+      return (game_board) => ai.minmax(game_board, 3, ai.heuristic);
+    case 4:
+      return (game_board) => ai.alphabeta(game_board, 1, ai.heuristic);
+    case 5:
+      return (game_board) => ai.alphabeta(game_board, 2, ai.heuristic);
+    case 6:
+      return (game_board) => ai.alphabeta(game_board, 3, ai.heuristic);
   };
 };
 
@@ -117,7 +123,7 @@ const big_game_dict = {
   state: 0
 };
 
-const ailevels = {'random': 0, 'minmax1':1, 'minmax2':2, 'minmax4':3};
+const ailevels = {'random': 0, 'minmax1':1, 'minmax2':2, 'minmax3':3, 'alphabeta1':4, 'alphabeta2':5, 'alphabeta3':6};
 
 async function handle_game(myevent) {
   let thisclick = null
