@@ -34,6 +34,7 @@ const loa = {
 
   get_piece_moves: function(game_state, cell, turn) {
     if (game_state.board[cell.x][cell.y] != turn) return [];
+    if (this.endgame(game_state)) return [];
     let board = game_state.board;
     let enemy_piece = this.get_next_turn_symbol(game_state);
     
@@ -420,7 +421,7 @@ const loa = {
 
   play: function(game_state, turn, play) {
     let playres = this._play(game_state, turn, play);
-    let winres  = this.win(game_state);
+    let winres  = this.win(playres);
     const res = Object.assign(playres, winres);
     return res;
   }

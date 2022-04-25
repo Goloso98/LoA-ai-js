@@ -1,8 +1,7 @@
 var loa_1 = null;
 var player1 = 'random';
 var player2 = 'random';
-var nTracker = 0;
-var MAXROUNDS = 10;
+var MAXROUNDS = 1000;
 var sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
 var isrun = false;
 
@@ -83,80 +82,6 @@ function clearboard() {
 function myclick(n) {
   handle_game({'event': 'click', 'where': n});
   return;
-  //console.log('a', n);
-  //console.log(nTracker);
-
-  if (!loa_1 || loa_1.existe_win) return;
-  let board = loa_1.board;
-
-  let pieceX = Math.floor(n/8);
-  let pieceY = Math.floor(n%8);
-  //console.log(pieceX + ' ' + pieceY);
-  let piece = board[pieceX][pieceY];
-  //console.log(piece);
-  
-  if(loa_1.turn == 'B') {
-
-    if(piece == 'B') {
-      clearPossibleMoves();
-      draw();
-      nTracker = n;
-      console.log(nTracker + ' ntracker');
-      let possibleMoves = loa.get_piece_moves({'board':board, turn: 'B'}, {'x':pieceX, 'y':pieceY}, 'B');
-      //console.log(possibleMoves);
-      for(let i = 0; i < possibleMoves.length; i++) {
-        let x = possibleMoves[i][0];
-        let y = possibleMoves[i][1];
-        //console.log(possibleMoves[i][0] + ' ' + possibleMoves[i][1]);
-        let pos = x*8 + y;
-        //console.log(pos);
-        if(document.getElementById(pos).className != "piece pieceblack") {
-          document.getElementById(pos).className = "piece possibleBlack";
-        }
-      }
-    } else 
-    
-    if(document.getElementById(n).className == "piece possibleBlack") {
-
-      let oldX = Math.floor(nTracker/8);
-      let oldY = Math.floor(nTracker%8);
-      loa_1 = loa.play(loa_1, 'B', [[oldX, oldY], [pieceX, pieceY]]);
-      document.getElementById(nTracker).className = "";
-      clearPossibleMoves();
-      draw();
-    }
-  } else {
-  
-    if(piece == 'W') {
-      clearPossibleMoves();
-      draw();
-      nTracker = n;
-      console.log(nTracker + ' ntracker');
-      let possibleMoves = loa.get_piece_moves({'board':board, turn: 'W'}, {'x':pieceX, 'y':pieceY}, 'W');
-      console.log(possibleMoves);
-      for(let i = 0; i < possibleMoves.length; i++) {
-        let x = possibleMoves[i][0];
-        let y = possibleMoves[i][1];
-        console.log(possibleMoves[i][0] + ' ' + possibleMoves[i][1]);
-        let pos = x*8 + y;
-        console.log(pos);
-        if(document.getElementById(pos).className != "piece piecewhite") {
-          document.getElementById(pos).className = "piece possibleWhite";
-        }
-      }
-    } 
-    else 
-    
-    if(document.getElementById(n).className == "piece possibleWhite") {
-
-      let oldX = Math.floor(nTracker/8);
-      let oldY = Math.floor(nTracker%8);
-      loa_1 = loa.play(loa_1, 'W', [[oldX, oldY], [pieceX, pieceY]]);
-      document.getElementById(nTracker).className = "";
-      clearPossibleMoves();
-      draw();
-    }
-  }
 }
 
 
@@ -182,19 +107,6 @@ const big_game_dict = {
 const ailevels = {'random': 0, 'minmax':1};
 
 async function handle_game(myevent) {
-  //console.log(myevent);
-  //check the event
-  // check if is a new game start...
-  //check if game is on var
-
-  //check if p1 has played
-    //check who is to play
-      // if player; handle the first key input... then on the next call handle the second key input
-
-  //check if is p2 turn...
-    //repet p1 steps...
-
-  //check wins
   let thisclick = null
   if (myevent && myevent.event == 'click')
     thisclick = {'x': Math.floor(myevent.where/8), 'y': myevent.where%8};
@@ -229,7 +141,6 @@ async function handle_game(myevent) {
         break;
 
       case 2:
-        console.log('case 2');
         const play = ai.random(loa_1);
         //const play = ai.minmax(loa_1, 3, ai.heuristic);
         if (!play.move)
@@ -280,7 +191,6 @@ async function handle_game(myevent) {
         break;
 
       case 6:
-        console.log(big_game_dict);
         const doplay = [big_game_dict.movestart, big_game_dict.moveend];
         loa_1 = loa.play(loa_1, loa_1.turn, doplay);
         big_game_dict.rounds++;
@@ -298,6 +208,5 @@ async function handle_game(myevent) {
   } while (big_game_dict.state != 3 && 
         big_game_dict.state != 4 && 
         big_game_dict.state != 5);
-  console.log('stopwhile');
 }
 
