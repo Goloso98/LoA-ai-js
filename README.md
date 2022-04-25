@@ -33,6 +33,6 @@ When you open the page there's a board and under it the options of how you want 
 - Ai vs Human
 - AI vs AI
 
-The AI has 4 different levels Easy, Medium, Hard and Very Hard.
+The AI has 7 different levels Easy, then for Minmax algorithm we have Medium, Hard and Very Hard(Depth Search 1, 2 and 3 respectively) and the last 3 are using Alpha Beta Pruning with Medium, Hard and Very Hard(Depth Search 1, 2 and 3 respectively).
 
 After choosing how you want to play simply click on the "New Game" button and you can start the game!

@@ -126,7 +126,7 @@ const ai = {
   },
 
   alphabeta: function(game_state, depth, heuristic) {
-    console.log('alphabeta');
+    console.log('alphabeta ' + depth);
     let moves = loa.get_moves(game_state, game_state.turn);
     let bestval = -Infinity;
     let bestmove = null;
@@ -141,6 +141,7 @@ const ai = {
       const new_game_state = loa.play(game_state, game_state.turn, move);
       if (loa.win(new_game_state).player == game_state.turn)
         return {'move': move, 'heuristic': heuristic(new_game_state, game_state.turn)};
+      console.log( 'depth ' + depth);
       const currval = ai._alphabeta_max(new_game_state, -Infinity, Infinity, depth-1, heuristic);
       if (currval > bestval) {
         bestval = currval;
@@ -152,12 +153,12 @@ const ai = {
   },
 
   _alphabeta_max: function(game_state, alpha, beta, depth, heuristic) {
-    //console.log('max: ', depth);
+    console.log('max: ', depth);
     if (depth == 0) {
       //console.log(depth, 'max ', heuristic(game_state, game_state.turn));
       return heuristic(game_state, loa._get_next_turn_symbol(game_state.turn));
     };
-
+    console.log('max: ', depth);
     const moves = loa.get_moves(game_state, game_state.turn);
     if (moves.length < 1) {
       return heuristic(game_state, loa._get_next_turn_symbol(game_state.turn));
