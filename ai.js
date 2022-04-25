@@ -59,7 +59,7 @@ const ai = {
   },
 
   minmax: function(game_state, depth, heuristic) {
-    console.log('minmax');
+    console.log('minmax ', depth);
     let moves = loa.get_moves(game_state, game_state.turn);
     let bestval = -Infinity;
     let bestmove = null;

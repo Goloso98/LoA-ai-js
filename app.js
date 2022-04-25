@@ -95,6 +95,19 @@ function clearPossibleMoves() {
   }
 }
 
+function getaicb(level) {
+  switch(level) {
+    case 0:
+      return (game_board) => ai.random(game_board);
+    case 1:
+      return (game_board) => ai.minmax(game_board, 1, ai.heuristic);
+    case 2:
+      return (game_board) => ai.minmax(game_board, 2, ai.heuristic);
+    case 3:
+      return (game_board) => ai.minmax(game_board, 4, ai.heuristic);
+  };
+};
+
 const big_game_dict = {
   players: ['B', 'W'],
   rounds: 0,
@@ -104,7 +117,7 @@ const big_game_dict = {
   state: 0
 };
 
-const ailevels = {'random': 0, 'minmax':1};
+const ailevels = {'random': 0, 'minmax1':1, 'minmax2':2, 'minmax4':3};
 
 async function handle_game(myevent) {
   let thisclick = null
@@ -124,7 +137,7 @@ async function handle_game(myevent) {
         if (player2 == 'human')
           big_game_dict.players_kind[1] = {kind: 'person', lastclick: null, lastclickround: -1};
         else
-          big_game_dict.players_kind[1] = {kind: 'ai', level: ailevels[player1]};
+          big_game_dict.players_kind[1] = {kind: 'ai', level: ailevels[player2]};
         
         big_game_dict.rounds = 0; 
         big_game_dict.movestart = null; 
@@ -141,7 +154,9 @@ async function handle_game(myevent) {
         break;
 
       case 2:
-        const play = ai.random(loa_1);
+        const aicb = getaicb(big_game_dict.players_kind[big_game_dict.rounds % 2].level);
+        const play = aicb(loa_1);
+        //const play = ai.random(loa_1);
         //const play = ai.minmax(loa_1, 3, ai.heuristic);
         if (!play.move)
           console.log('AI Error');
