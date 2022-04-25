@@ -2,18 +2,33 @@ var loa_1 = null;
 var player1 = 'random';
 var player2 = 'random';
 var nTracker = 0;
+var MAXROUNDS = 10;
+var sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
+var isrun = false;
 
 function newgame() {
-  player1 = document.getElementById("p1ai").value;
-  player2 = document.getElementById("p2ai").value;
-  clearboard();
-  loa_1 = loa.new_board();
-  draw();
-  startgame();
+  if (isrun) {
+    isrun = false;
+    big_game_dict.state = 5;
+  } else {
+    isrun = true;
+    player1 = document.getElementById("p1ai").value;
+    player2 = document.getElementById("p2ai").value;
+    clearboard();
+    loa_1 = loa.new_board();
+    draw();
+    //handle_game(null);
+    startgame();
+  };
 }
 
+function startgame() {
+  big_game_dict.state = 0;
+  handle_game(null);
+};
+
 function draw() {
-  //clearboard();
+  clearboard();
   if (!loa_1) return;
   let board = loa_1.board;
   let size = 8;
@@ -66,6 +81,8 @@ function clearboard() {
 }
 
 function myclick(n) {
+  handle_game({'event': 'click', 'where': n});
+  return;
   //console.log('a', n);
   //console.log(nTracker);
 
@@ -153,20 +170,19 @@ function clearPossibleMoves() {
   }
 }
 
-async function startgame() {
-  console.log(player1, player2);
-  let go = false;
-  while (go) {
-    console.log('in');
-    let p1 = document.getElementById("p1ai").value;
-    let p2 = document.getElementById("p2ai").value;
-    //go = p1 == p2;
-  };
-  return;
-}
+const big_game_dict = {
+  players: ['B', 'W'],
+  rounds: 0,
+  players_kind: [{kind: 'person', lastclick: null, lastclickround: -1}, {kind: 'ai', level: 0}],
+  movestart: null,
+  moveend: null,
+  state: 0
+};
 
-const big_game_dict = {};
-function handle_game(myevent) {
+const ailevels = {'random': 0, 'minmax':1};
+
+async function handle_game(myevent) {
+  //console.log(myevent);
   //check the event
   // check if is a new game start...
   //check if game is on var
@@ -179,7 +195,109 @@ function handle_game(myevent) {
     //repet p1 steps...
 
   //check wins
+  let thisclick = null
+  if (myevent && myevent.event == 'click')
+    thisclick = {'x': Math.floor(myevent.where/8), 'y': myevent.where%8};
+  do {
+    draw();
+    if (!isrun)
+      return;
+    switch(big_game_dict.state) {
+      case 0:
+        if (player1 == 'human')
+          big_game_dict.players_kind[0] = {kind: 'person', lastclick: null, lastclickround: -1};
+        else
+          big_game_dict.players_kind[0] = {kind: 'ai', level: ailevels[player1]};
 
-  
+        if (player2 == 'human')
+          big_game_dict.players_kind[1] = {kind: 'person', lastclick: null, lastclickround: -1};
+        else
+          big_game_dict.players_kind[1] = {kind: 'ai', level: ailevels[player1]};
+        
+        big_game_dict.rounds = 0; 
+        big_game_dict.movestart = null; 
+        big_game_dict.moveend = null; 
+        big_game_dict.state = 1;
+        break;
+
+      case 1:
+        if (big_game_dict.players_kind[ big_game_dict.rounds % 2 ].kind == 'person')
+          big_game_dict.state = 3;
+        else
+          big_game_dict.state = 2;
+        await sleep(100);
+        break;
+
+      case 2:
+        console.log('case 2');
+        const play = ai.random(loa_1);
+        //const play = ai.minmax(loa_1, 3, ai.heuristic);
+        if (!play.move)
+          console.log('AI Error');
+        big_game_dict.movestart = play.move[0];
+        big_game_dict.moveend = play.move[1];
+        big_game_dict.state = 6;
+        break;
+
+      case 3:
+        big_game_dict.players_kind[ big_game_dict.rounds % 2 ].lastclick = null;
+        if (myevent.event != 'click')
+          return;
+        //thisclick = {'x': Math.floor(myevent.where/8), 'y': myevent.where%8};
+        //const lastclick = big_game_dict.players_kind[ big_game_dict.rounds % 2 ].lastclick;
+        //if (thisclick.x == lastclick.x && thisclick.y == lastclick.y)
+        //  return;
+        //big_game_dict.players_kind[ big_game_dict.rounds % 2 ].lastclick = thisclick;
+        big_game_dict.movestart = [thisclick.x, thisclick.y];
+        const validmoves = loa.get_piece_moves(loa_1, thisclick, loa_1.turn); 
+        if (validmoves.length < 1)
+          return;
+        //draw possibles
+        for (const pmove of validmoves) {
+          const pid = pmove[0]*8 + pmove[1];
+          if (loa_1.turn == 'B')
+            document.getElementById(pid).className = 'piece possibleBlack';
+          else
+            document.getElementById(pid).className = 'piece possibleWhite';
+        }; 
+        big_game_dict.state = 4;
+        break;
+
+      case 4:
+        //thisclick = {'x': Math.floor(myevent.where/8), 'y': myevent.where%8};
+        big_game_dict.moveend = [thisclick.x, thisclick.y];
+        //big_game_dict.players_kind[ big_game_dict.rounds % 2 ].lastclick = thisclick;
+        if (!loa._play_in_moves([big_game_dict.movestart, big_game_dict.moveend], loa.get_moves(loa_1, loa_1.turn))) {
+          big_game_dict.state = 3;
+          return;
+        };
+        big_game_dict.state = 6;
+        break;
+
+      case 5:
+        console.log('end state5');
+        isrun = false;
+        break;
+
+      case 6:
+        console.log(big_game_dict);
+        const doplay = [big_game_dict.movestart, big_game_dict.moveend];
+        loa_1 = loa.play(loa_1, loa_1.turn, doplay);
+        big_game_dict.rounds++;
+        big_game_dict.state = 1;
+        if (loa_1.exist_win || big_game_dict.rounds > MAXROUNDS)
+          big_game_dict.state = 7;
+        break;
+
+      case 7:
+        big_game_dict.state = 5;
+        isrun = false;
+        break;
+
+    };
+  } while (big_game_dict.state != 3 && 
+        big_game_dict.state != 4 && 
+        big_game_dict.state != 5);
+  console.log('stopwhile');
 }
 
