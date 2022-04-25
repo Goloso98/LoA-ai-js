@@ -25,4 +25,12 @@ this will return errors along with game_state.
 
 ## How to run and play the game
 
-A simple double click on the index.html file is enough
+A simple double click on the index.html file is enough to start the game. 
+When you open the page there's a board and under it the options of how you want to play the game, you select the following options:
+
+- Human vs Human
+- Human vs AI
+- Ai vs Human
+- AI vs AI
+
+The AI has 4 different levels Easy, Medium, Hard and Very Hard.
