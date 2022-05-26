@@ -13,15 +13,17 @@ It's a classic board game. Played by two "people", on a 8x8 board.
 - [X] buttons
 
 ## Exemple
+```js
 let loa_game = loa.new_board()
 // black opens the game
 loa_game = loa.play(loa_game, 'B', [[piecetomovex, piecetomovey], [wheretomovex, wheretomovey]])
 // then white
 loa_game = loa.play(loa_game, 'W', [[piecetomovex, piecetomovey], [wheretomovex, wheretomovey]])
+```
 
 and so on...
 
-this will return errors along with game_state.
+this will return errors along with game\_state.
 
 ## How to run and play the game
 
