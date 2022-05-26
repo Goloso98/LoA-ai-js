@@ -117,21 +117,13 @@ class Loa():
             num = play_start
             x = num % self.size
             y = num // self.size
-            # mult = 1
 
-            # if (num) < self._pos(y,y):
-            #     # if num below main diagonal
-            #     # then mirror it perpendicular to the main diag
-            #     num = self.pos(y,x)
-            #     x, y = y, x
-            #     mult = self.size
-
-            # # y = distance to left edge
             lower = x-y
             if lower < 0:
                 lower *= self.size * -1
 
             count = 0
+            # TODO : invalid forloop, need to get upper bound and decrese... not like this!
             for i in range(lower, self.size * self.size, self.size + 1): # range: [lower, size**2[ not included
                 if (self.board[i] != 0):
                     count += 1
@@ -143,6 +135,7 @@ class Loa():
 
             lower = 0
             count = 0
+            # TODO : not even done
             for i in range(lower, self.size * self.size, self.size - 1):
                 if (self.board[i] != 0):
                     count += 1
@@ -155,6 +148,7 @@ class Loa():
             return False
 
         if isHorizontal():
+            # TODO : check move jump size with countHorizontal...
             pass
 
 
