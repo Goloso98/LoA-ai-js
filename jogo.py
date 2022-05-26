@@ -137,9 +137,12 @@ class Loa():
                     count += 1
 
         def countDiagonal2():
-            collumn = play_start % self.size
-            count = 0
+            num = play_start
+            x = num % self.size
+            y = num // self.size
+
             lower = 0
+            count = 0
             for i in range(lower, self.size * self.size, self.size - 1):
                 if (self.board[i] != 0):
                     count += 1
@@ -160,7 +163,7 @@ class Loa():
         if not self.isValid(play_start, play_end):
             return my
         # if valide move
-        my._play(play)
+        my._play(play_start, play_end)
         return my
 
     def _play(self, play_start, play_end):
@@ -182,6 +185,6 @@ a = {
     }
 
 l = Loa() #options=a)
-ll = l.play(None)
+ll = l.play(0, 0)
 print(l)
 print(ll)
