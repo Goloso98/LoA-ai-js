@@ -1,6 +1,7 @@
 import numpy as np
+from copy import copy
 
-class loa():
+class Loa():
 
     B = -1
     E = 0
@@ -8,7 +9,7 @@ class loa():
 
     def make_board(self, size):
         board = np.zeros(size * size, dtype = int)
-        #board[0] = loa.B
+        #board[0] = Loa.B
         for i in range(1, size-1):
             #board[i] = self.B   #top
             #board[(size - 1) * size + i] = self.B   #bot
@@ -42,6 +43,15 @@ class loa():
         # also check win here to fill blanks
         pass
 
+    def __copy__(self):
+        clone = Loa.__new__(Loa)
+        clone.size = self.size
+        clone.turn = self.turn
+        clone.status = self.status
+        clone.board = np.copy(self.board)
+        return clone
+
+
     def _pos(self, x, y):
         return (self.size * x) + y
 
@@ -55,24 +65,111 @@ class loa():
     def __str__(self):
         board = self.board
         buff = ""
+        buff += "__________________\n"
         buff += "Board:"
         for i in range(self.size * self.size):
             if not i%self.size:
                 buff += "\n\t"
+            else:
+                buff += " "
             buff += self._pieces(board[i])
-            buff += " "
         buff += "\nTurn: "
         buff += self._pieces(self.turn)
+        buff += "\nStatus: "
+        buff += "nope"
+        buff += "\n__________________"
         return buff
-
-    def play(self, play):
-        pass
-
-    def clone(self):
-        pass
     
-    def _play(self, play):
-        pass
+    def isValid(self, play_start, play_end):
+
+        def isHorizontal():
+            # assume start, verify end
+            Hstart = (play_start // self.size) * self.size # included
+            Hend   = Hstart + self.size # not included
+            return play_end >= Hstart and play_end < Hend
+
+        def isVertical():
+            return (play_start % self.size) == (play_end % self.size)
+
+        def isDiagonal1(): # \
+            return ((play_start % self.size) - (play_end % self.size)) == \
+                    ((play_start // self.size) - (play_end // self.size))
+
+        def isDiagonal2(): # /
+            return ((play_start % self.size) - (play_end % self.size)) == \
+                    (((play_start // self.size) - (play_end // self.size)) * -1)
+
+        def countHorizontal():
+            line = play_start // self.size
+            count = 0
+            for i in range(line*self.size, line*self.size+self.size):
+                if (self.board[i] != 0):
+                    count += 1
+
+        def countVertical():
+            collumn = play_start % self.size
+            count = 0
+            for i in range(collumn, self.size * self.size, self.size):
+                if (self.board[i] != 0):
+                    count += 1
+
+        def countDiagonal1():
+            num = play_start
+            x = num % self.size
+            y = num // self.size
+            # mult = 1
+
+            # if (num) < self._pos(y,y):
+            #     # if num below main diagonal
+            #     # then mirror it perpendicular to the main diag
+            #     num = self.pos(y,x)
+            #     x, y = y, x
+            #     mult = self.size
+
+            # # y = distance to left edge
+            lower = x-y
+            if lower < 0:
+                lower *= self.size * -1
+
+            count = 0
+            for i in range(lower, self.size * self.size, self.size + 1): # range: [lower, size**2[ not included
+                if (self.board[i] != 0):
+                    count += 1
+
+        def countDiagonal2():
+            collumn = play_start % self.size
+            count = 0
+            lower = 0
+            for i in range(lower, self.size * self.size, self.size - 1):
+                if (self.board[i] != 0):
+                    count += 1
+
+        if (play_start == play_end):
+            return False
+        if (play_start < 0 or play_end < 0 or \
+                play_start >= self.size * self.size or \
+                play_end >= self.size * self.size):
+            return False
+
+        if isHorizontal():
+            pass
+
+
+    def play(self, play_start, play_end):
+        my = self.__copy__()
+        if not self.isValid(play_start, play_end):
+            return my
+        # if valide move
+        my._play(play)
+        return my
+
+    def _play(self, play_start, play_end):
+        #just play
+        self.board[play_start] = self.E
+        self.board[play_end] = self.turn
+
+        self.turn *= -1
+
 
 
 def my_b(size):
@@ -80,10 +177,11 @@ def my_b(size):
 
 a = {
     'size': 1,
-    'turn': loa.W,
+    'turn': Loa.W,
     'make': my_b
     }
 
-l = loa() #options=a)
-#print(l.board)
+l = Loa() #options=a)
+ll = l.play(None)
 print(l)
+print(ll)
