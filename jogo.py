@@ -10,17 +10,14 @@ class Loa():
     W = 1
 
     def make_board(self, size):
+        def pos(x, y):
+            return (y * size) + x
         board = np.zeros(size * size, dtype = int)
-        #board[0] = Loa.B
         for i in range(1, size-1):
-            #board[i] = self.B   #top
-            #board[(size - 1) * size + i] = self.B   #bot
-            #board[i * size] = self.W    #left
-            #board[(i * size) + (size - 1)] = self.W    #right
-            board[self._pos(i, 0     )] = self.B   #top
-            board[self._pos(i, size-1)] = self.B   #bot
-            board[self._pos(0     , i)] = self.W    #left
-            board[self._pos(size-1, i)] = self.W    #right
+            board[pos(i, 0     )] = self.B   #top
+            board[pos(i, size-1)] = self.B   #bot
+            board[pos(0     , i)] = self.W   #left
+            board[pos(size-1, i)] = self.W   #right
 
         return board
 
@@ -28,14 +25,14 @@ class Loa():
         defaults = {
             'size': 8,
             'turn': self.B,
-            'make': self.make_board
+            'board': self.make_board(8) # np.array
             }
         options = options or defaults
 
         self.size = options['size']
         self.bsize = self.size * self.size
         self.turn = options['turn']
-        self.board = options['make'](self.size)
+        self.board = options['board']
         self.round = 0
         # status:
         self.status = [0, 0]
@@ -330,30 +327,42 @@ class Loa():
         W = Wblob == counts[self.W]
         B = Bblob == counts[self.B]
 
-        # print(Wblob, Bblob)
-        if W:
-            if B:
-                #check if equal or greater blob size
-                if Wblob > Bblob:
-                    #W wins
-                    self.status[0] += 1
-                    self.status[1]  = self.W
-                elif Bblob > Wblob:
-                    #B wins
-                    self.status[0] += 1
-                    self.status[1]  = self.B
-                else:
-                    #draw
-                    self.status[0] = 2
-            else:
-                #W wins
-                self.status[0] += 1
-                self.status[1]  = self.W
+        if W and B:
+            self.status[0] = 1
+            self.status[1] = self.turn
         else:
+            if W:
+                self.status[0] = 1
+                self.status[1] = self.W
             if B:
-                #B wins
-                self.status[0] += 1
-                self.status[1]  = self.B
+                self.status[0] = 1
+                self.status[1] = self.B
+
+
+        # print(Wblob, Bblob)
+        # if W:
+        #     if B:
+        #         #check if equal or greater blob size
+        #         if Wblob > Bblob:
+        #             #W wins
+        #             self.status[0] += 1
+        #             self.status[1]  = self.W
+        #         elif Bblob > Wblob:
+        #             #B wins
+        #             self.status[0] += 1
+        #             self.status[1]  = self.B
+        #         else:
+        #             #draw
+        #             self.status[0] = 2
+        #     else:
+        #         #W wins
+        #         self.status[0] += 1
+        #         self.status[1]  = self.W
+        # else:
+        #     if B:
+        #         #B wins
+        #         self.status[0] += 1
+        #         self.status[1]  = self.B
 
 
     def play(self, play_start, play_end):
@@ -377,43 +386,15 @@ class Loa():
         self.set_win()
 
 
+if __name__ == "__main__":
+    l = Loa()
+    print(l)
+    ll = l.play(1, 7)
+    print(ll)
+    ll = l.play(3, 19)
+    print(ll)
+    ll = l.play(1, 19)
+    print(ll)
+    ll = l.play(5, 19)
+    print(ll)
 
-# def my_b(size):
-#     return [1]
-# 
-# a = {
-#     'size': 1,
-#     'turn': Loa.W,
-#     'make': my_b
-#     }
-# 
-# l = Loa() #options=a)
-# ll = l.play(0, 0)
-# print(l)
-# print(ll)
-
-l = Loa()
-print(l)
-ll = l.play(1, 7)
-print(ll)
-ll = l.play(3, 19)
-print(ll)
-ll = l.play(1, 19)
-print(ll)
-ll = l.play(5, 19)
-print(ll)
-
-##ll = l.play(1, 2)
-##print(ll)
-##ll = ll.play(3, 0)
-##print(ll)
-##ll = ll.play(7, 8)
-##print(ll)
-##ll = ll.play(0, 2)
-##print(ll)
-##ll = ll.play(8, 7)
-##print(ll)
-# ll = ll.play(48, 0)
-# print(ll)
-# ll = ll.play(7, 0)
-# print(ll)
