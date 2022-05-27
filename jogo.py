@@ -1,5 +1,5 @@
 import numpy as np
-from copy import copy
+# from copy import copy
 
 class Loa():
 
@@ -32,10 +32,12 @@ class Loa():
         options = options or defaults
 
         self.size = options['size']
+        self.bsize = self.size * self.size
         self.turn = options['turn']
         self.board = options['make'](self.size)
         # status:
         self.status = [0, None]
+        self.round = 0
         # 0 - running
         # 1 - one wins; check 2nd pos
         # 2 - draw
@@ -46,10 +48,30 @@ class Loa():
     def __copy__(self):
         clone = Loa.__new__(Loa)
         clone.size = self.size
+        clone.bsize = self.bsize
         clone.turn = self.turn
         clone.status = self.status
+        clone.round = self.round
         clone.board = np.copy(self.board)
         return clone
+
+    def __eq__(self, other):
+        if not isinstance(other, Loa):
+            return False
+
+        if self.turn != other.turn:
+            return False
+        
+        if self.round != other.round:
+            return False
+        
+        if self.status != other.status:
+            return False
+
+        if not np.array_equal(self.board, other.board):
+            return False
+        
+        return True
 
 
     def _pos(self, x, y):
@@ -67,7 +89,7 @@ class Loa():
         buff = ""
         buff += "__________________\n"
         buff += "Board:"
-        for i in range(self.size * self.size):
+        for i in range(self.bsize):
             if not i%self.size:
                 buff += "\n\t"
             else:
@@ -105,52 +127,118 @@ class Loa():
             for i in range(line*self.size, line*self.size+self.size):
                 if (self.board[i] != 0):
                     count += 1
+            return count
 
         def countVertical():
             collumn = play_start % self.size
             count = 0
-            for i in range(collumn, self.size * self.size, self.size):
+            for i in range(collumn, self.bsize, self.size):
                 if (self.board[i] != 0):
                     count += 1
+            return count
 
         def countDiagonal1():
             num = play_start
             x = num % self.size
             y = num // self.size
 
-            lower = x-y
-            if lower < 0:
-                lower *= self.size * -1
-
             count = 0
-            # TODO : invalid forloop, need to get upper bound and decrese... not like this!
-            for i in range(lower, self.size * self.size, self.size + 1): # range: [lower, size**2[ not included
-                if (self.board[i] != 0):
+            for i in range(self.size - x): # range: [start.x, size[
+                pos = self._pos(x + i, y + i)
+                if (pos >= self.bsize):
+                    break
+                if (self.board[pos] != self.E):
                     count += 1
+
+            for i in range(1, x + 1):
+                pos = self._pos(x - i, y - i)
+                if (pos < 0):
+                    break
+                if (self.board[pos] != self.E):
+                    count += 1
+
+            return count
 
         def countDiagonal2():
             num = play_start
             x = num % self.size
             y = num // self.size
 
-            lower = 0
             count = 0
-            # TODO : not even done
-            for i in range(lower, self.size * self.size, self.size - 1):
-                if (self.board[i] != 0):
+            for i in range(self.size - x): # range: [start.x, size[
+                pos = self._pos(x + i, y - i)
+                if (pos < 0):
+                    break
+                if (self.board[pos] != self.E):
                     count += 1
 
-        if (play_start == play_end):
-            return False
-        if (play_start < 0 or play_end < 0 or \
-                play_start >= self.size * self.size or \
-                play_end >= self.size * self.size):
-            return False
+            for i in range(1, x + 1):
+                pos = self._pos(x - i, y + i)
+                if (pos >= self.bsize):
+                    break
+                if (self.board[pos] != self.E):
+                    count += 1
+
+            return count
 
         if isHorizontal():
-            # TODO : check move jump size with countHorizontal...
-            pass
+            # check move jump size with countHorizontal...
+            step = countHorizontal()
+            num_min = min(play_start, play_end)
+            num_max = max(play_start, play_end)
 
+            nxturn = self.turn * -1
+            for i in range(step):
+                num_min += 1
+                piece = self.board[num_min]
+                if piece == nxturn:
+                    return False
+                
+            return True
+
+        if isVertical():
+            step = countVertical()
+            num_min = min(play_start, play_end)
+            num_max = max(play_start, play_end)
+
+            nxturn = self.turn * -1
+            for i in range(step):
+                num_min += self.size
+                piece = self.board[num_min]
+                if piece == nxturn:
+                    return False
+                
+            return True
+
+        if isDiagonal1():
+            step = countDiagonal1()
+            num_min = min(play_start, play_end)
+            num_max = max(play_start, play_end)
+
+            nxturn = self.turn * -1
+            for i in range(step):
+                num_min += self.size + 1
+                piece = self.board[num_min]
+                if piece == nxturn:
+                    return False
+                
+            return True
+
+        if isDiagonal2():
+            step = countDiagonal2()
+            num_min = min(play_start, play_end)
+            num_max = max(play_start, play_end)
+
+            nxturn = self.turn * -1
+            for i in range(step):
+                num_min += self.size - 1
+                piece = self.board[num_min]
+                if piece == nxturn:
+                    return False
+                
+            return True
+
+        return False
 
     def play(self, play_start, play_end):
         my = self.__copy__()
@@ -165,20 +253,33 @@ class Loa():
         self.board[play_start] = self.E
         self.board[play_end] = self.turn
 
+        self.round += 1
         self.turn *= -1
 
 
 
-def my_b(size):
-    return [1]
+# def my_b(size):
+#     return [1]
+# 
+# a = {
+#     'size': 1,
+#     'turn': Loa.W,
+#     'make': my_b
+#     }
+# 
+# l = Loa() #options=a)
+# ll = l.play(0, 0)
+# print(l)
+# print(ll)
 
-a = {
-    'size': 1,
-    'turn': Loa.W,
-    'make': my_b
-    }
-
-l = Loa() #options=a)
-ll = l.play(0, 0)
+l = Loa()
 print(l)
+ll = l.play(1, 7)
 print(ll)
+ll = ll.play(54, 0)
+print(ll)
+ll = ll.play(7, 0)
+print(ll)
+lll = ll.play(1, 7)
+print(lll)
+print(lll == l)
