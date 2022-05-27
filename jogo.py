@@ -22,7 +22,6 @@ class Loa():
             board[self._pos(0     , i)] = self.W    #left
             board[self._pos(size-1, i)] = self.W    #right
 
-            
         return board
 
     def __init__(self, options=None):
@@ -181,8 +180,8 @@ class Loa():
         # print
         # print("H ", self.Horizontal_list)
         # print("V ", self.Vertical_list)
-        print("D1", self.Diagonal1_list)
-        print("D2", self.Diagonal2_list)
+        # print("D1", self.Diagonal1_list)
+        # print("D2", self.Diagonal2_list)
         pass
 
     def _pieces(self, n):
@@ -213,79 +212,61 @@ class Loa():
         return buff
     
     def isValid(self, play_start, play_end):
+        H_  = list(filter(lambda x: play_start in x, self.Horizontal_list))[0]
+        V_  = list(filter(lambda x: play_start in x, self.Vertical_list))[0]
+        D1_ = list(filter(lambda x: play_start in x, self.Diagonal1_list))[0]
+        D2_ = list(filter(lambda x: play_start in x, self.Diagonal2_list))[0]
 
         def isHorizontal():
             # assume start, verify end
-            Hstart = (play_start // self.size) * self.size # included
-            Hend   = Hstart + self.size # not included
-            return play_end >= Hstart and play_end < Hend
+            return play_end in H_
 
         def isVertical():
-            return (play_start % self.size) == (play_end % self.size)
+            return play_end in V_
 
         def isDiagonal1(): # \
-            return ((play_start % self.size) - (play_end % self.size)) == \
-                    ((play_start // self.size) - (play_end // self.size))
+            return play_end in D1_
 
         def isDiagonal2(): # /
-            return ((play_start % self.size) - (play_end % self.size)) == \
-                    (((play_start // self.size) - (play_end // self.size)) * -1)
+            return play_end in D2_
 
-        def countHorizontal():
-            line = play_start // self.size
-            count = 0
-            for i in range(line*self.size, line*self.size+self.size):
-                if (self.board[i] != 0):
-                    count += 1
+        def _count(the_list):
+            l = list(map(lambda pos: self.board[pos], the_list))
+            count = len(the_list) - l.count(self.E)
             return count
 
         def countVertical():
-            collumn = play_start % self.size
-            count = 0
-            for i in range(collumn, self.bsize, self.size):
-                if (self.board[i] != 0):
-                    count += 1
+            count = _count(V_)
             return count
 
         def countDiagonal1():
-            x, y = self._pos_expand(play_start)
-
-            count = 0
-            for i in range(self.size - x): # range: [start.x, size[
-                pos = self._pos(x + i, y + i)
-                if (pos >= self.bsize):
-                    break
-                if (self.board[pos] != self.E):
-                    count += 1
-
-            for i in range(1, x + 1):
-                pos = self._pos(x - i, y - i)
-                if (pos < 0):
-                    break
-                if (self.board[pos] != self.E):
-                    count += 1
-
+            count = _count(D1_)
             return count
 
         def countDiagonal2():
-            x, y = self._pos_expand(play_start)
-
-            count = 0
-            for i in range(self.size - x): # range: [start.x, size[
-                pos = self._pos(x + i, y - i)
-                if (pos < 0):
-                    break
-                if (self.board[pos] != self.E):
-                    count += 1
-
-            for i in range(1, x + 1):
-                pos = self._pos(x - i, y + i)
-                if (pos >= self.bsize):
-                    break
-                if (self.board[pos] != self.E):
-                    count += 1
-
+            count = _count(D2_)
             return count
+
+        def isLine(array):
+            # 1 -> goes rights in list; -1 -> goes left
+            step = 1 if play_start < play_end else -1
+            l = list(array)
+            l.sort()
+            # with pos array sorted, slice the between part from it
+            p1 = l.index(play_start)
+            p2 = l.index(play_end)
+            l_slice = l[p1 + step : p2 : step]
+            # get the actual pieces values
+            pieces_list = list(map(lambda pos: self.board[pos], l_slice))
+            otherTurn = self.turn * -1
+            # check if just other turn pieces
+            if pieces_list.count(otherTurn) > 0:
+                return False
+            # check movement quantity with pieces in that line
+            this_size = len(l_slice) + 1
+            must_size = _count(array)
+            return this_size == must_size
+
 
         if play_start < 0 or play_end < 0 or play_start >= self.bsize or play_end >= self.bsize: # bounds
             return False
@@ -297,61 +278,16 @@ class Loa():
             return False
 
         if isHorizontal():
-            # check move jump size with countHorizontal...
-            step = countHorizontal()
-            num_min = min(play_start, play_end)
-            num_max = max(play_start, play_end)
-
-            nxturn = self.turn * -1
-            for i in range(step-1):
-                num_min += 1
-                piece = self.board[num_min]
-                if piece == nxturn:
-                    return False
-                
-            return True
+            return isLine(H_)
 
         if isVertical():
-            step = countVertical()
-            num_min = min(play_start, play_end)
-            num_max = max(play_start, play_end)
-
-            nxturn = self.turn * -1
-            for i in range(step-1):
-                num_min += self.size
-                piece = self.board[num_min]
-                if piece == nxturn:
-                    return False
-                
-            return True
+            return isLine(V_)
 
         if isDiagonal1():
-            step = countDiagonal1()
-            num_min = min(play_start, play_end)
-            num_max = max(play_start, play_end)
-
-            nxturn = self.turn * -1
-            for i in range(step-1):
-                num_min += self.size + 1
-                piece = self.board[num_min]
-                if piece == nxturn:
-                    return False
-                
-            return True
+            return isLine(D1_)
 
         if isDiagonal2():
-            step = countDiagonal2()
-            num_min = min(play_start, play_end)
-            num_max = max(play_start, play_end)
-
-            nxturn = self.turn * -1
-            for i in range(step-1):
-                num_min += self.size - 1
-                piece = self.board[num_min]
-                if piece == nxturn:
-                    return False
-                
-            return True
+            return isLine(D2_)
 
         return False
 
@@ -394,7 +330,7 @@ class Loa():
         W = Wblob == counts[self.W]
         B = Bblob == counts[self.B]
 
-        print(Wblob, Bblob)
+        # print(Wblob, Bblob)
         if W:
             if B:
                 #check if equal or greater blob size
@@ -458,6 +394,15 @@ class Loa():
 
 l = Loa()
 print(l)
+ll = l.play(1, 7)
+print(ll)
+ll = l.play(3, 19)
+print(ll)
+ll = l.play(1, 19)
+print(ll)
+ll = l.play(5, 19)
+print(ll)
+
 ##ll = l.play(1, 2)
 ##print(ll)
 ##ll = ll.play(3, 0)
