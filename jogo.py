@@ -26,7 +26,7 @@ class Loa():
 
     def __init__(self, options=None):
         defaults = {
-            'size': 3,
+            'size': 8,
             'turn': self.B,
             'make': self.make_board
             }
