@@ -35,9 +35,9 @@ class Loa():
         self.bsize = self.size * self.size
         self.turn = options['turn']
         self.board = options['make'](self.size)
+        self.round = 0
         # status:
         self.status = [0, None]
-        self.round = 0
         # 0 - running
         # 1 - one wins; check 2nd pos
         # 2 - draw
@@ -240,8 +240,15 @@ class Loa():
 
         return False
 
+    def set_win(self, turn):
+        pass
+
     def play(self, play_start, play_end):
         my = self.__copy__()
+        if self.status[0] != 0: # then game ended
+            return my
+        if self.board[play_start] != self.turn:
+            return my
         if not self.isValid(play_start, play_end):
             return my
         # if valide move
@@ -255,6 +262,8 @@ class Loa():
 
         self.round += 1
         self.turn *= -1
+
+        #compute win state
 
 
 
@@ -282,4 +291,3 @@ ll = ll.play(7, 0)
 print(ll)
 lll = ll.play(1, 7)
 print(lll)
-print(lll == l)
