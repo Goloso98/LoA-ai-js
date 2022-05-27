@@ -1,4 +1,5 @@
 import numpy as np
+from collections import deque
 # from copy import copy
 
 class Loa():
@@ -15,17 +16,17 @@ class Loa():
             #board[(size - 1) * size + i] = self.B   #bot
             #board[i * size] = self.W    #left
             #board[(i * size) + (size - 1)] = self.W    #right
-            board[self._pos(0, i)] = self.B   #top
-            board[self._pos(size-1, i)] = self.B   #bot
-            board[self._pos(i, 0)] = self.W    #left
-            board[self._pos(i, size-1)] = self.W    #right
+            board[self._pos(i, 0     )] = self.B   #top
+            board[self._pos(i, size-1)] = self.B   #bot
+            board[self._pos(0     , i)] = self.W    #left
+            board[self._pos(size-1, i)] = self.W    #right
 
             
         return board
 
     def __init__(self, options=None):
         defaults = {
-            'size': 8,
+            'size': 3,
             'turn': self.B,
             'make': self.make_board
             }
@@ -37,7 +38,7 @@ class Loa():
         self.board = options['make'](self.size)
         self.round = 0
         # status:
-        self.status = [0, None]
+        self.status = [0, 0]
         # 0 - running
         # 1 - one wins; check 2nd pos
         # 2 - draw
@@ -75,7 +76,22 @@ class Loa():
 
 
     def _pos(self, x, y):
-        return (self.size * x) + y
+        if x < 0 or x >= self.bsize or y < 0 or y >= self.bsize:
+            return -1
+        return (self.size * y) + x
+
+    def _pos_expand(self, pos):
+        return (pos % self.size, pos // self.size)
+
+    def _pos_math(self, pos, i, j):
+        # return -1 if not valid
+        x, y = self._pos_expand(pos)
+        x += i
+        y += j
+
+        if x < 0 or x >= self.bsize or y < 0 or y >= self.bsize:
+            return -1
+        return self._pos(x, y)
 
     def _pieces(self, n):
         if n == 1:
@@ -98,7 +114,9 @@ class Loa():
         buff += "\nTurn: "
         buff += self._pieces(self.turn)
         buff += "\nStatus: "
-        buff += "nope"
+        buff += str(self.status[0])
+        buff += ", "
+        buff += self._pieces(self.status[0])
         buff += "\n__________________"
         return buff
     
@@ -138,9 +156,7 @@ class Loa():
             return count
 
         def countDiagonal1():
-            num = play_start
-            x = num % self.size
-            y = num // self.size
+            x, y = self._pos_expand(play_start)
 
             count = 0
             for i in range(self.size - x): # range: [start.x, size[
@@ -160,9 +176,7 @@ class Loa():
             return count
 
         def countDiagonal2():
-            num = play_start
-            x = num % self.size
-            y = num // self.size
+            x, y = self._pos_expand(play_start)
 
             count = 0
             for i in range(self.size - x): # range: [start.x, size[
@@ -181,6 +195,15 @@ class Loa():
 
             return count
 
+        if play_start < 0 or play_end < 0 or play_start >= self.bsize or play_end >= self.bsize: # bounds
+            return False
+        if self.status[0] != 0: # then game ended
+            return False
+        if self.board[play_start] != self.turn: # not your piece
+            return False
+        if self.board[play_end] == self.turn: # will not eat own piece
+            return False
+
         if isHorizontal():
             # check move jump size with countHorizontal...
             step = countHorizontal()
@@ -188,7 +211,7 @@ class Loa():
             num_max = max(play_start, play_end)
 
             nxturn = self.turn * -1
-            for i in range(step):
+            for i in range(step-1):
                 num_min += 1
                 piece = self.board[num_min]
                 if piece == nxturn:
@@ -202,7 +225,7 @@ class Loa():
             num_max = max(play_start, play_end)
 
             nxturn = self.turn * -1
-            for i in range(step):
+            for i in range(step-1):
                 num_min += self.size
                 piece = self.board[num_min]
                 if piece == nxturn:
@@ -216,7 +239,7 @@ class Loa():
             num_max = max(play_start, play_end)
 
             nxturn = self.turn * -1
-            for i in range(step):
+            for i in range(step-1):
                 num_min += self.size + 1
                 piece = self.board[num_min]
                 if piece == nxturn:
@@ -230,7 +253,7 @@ class Loa():
             num_max = max(play_start, play_end)
 
             nxturn = self.turn * -1
-            for i in range(step):
+            for i in range(step-1):
                 num_min += self.size - 1
                 piece = self.board[num_min]
                 if piece == nxturn:
@@ -240,15 +263,72 @@ class Loa():
 
         return False
 
-    def set_win(self, turn):
-        pass
+    def blob(self, turn):
+        def add_neigh():
+            for i in [-1, 0, 1]:
+                for j in [-1, 0, 1]:
+                    newpos = self._pos_math(cur, i, j)
+                    if newpos not in visited and newpos >= 0 and newpos < self.bsize and self.board[newpos] == turn:
+                        stack.append(newpos)
+
+        i = 0
+        while self.board[i] != turn and i < self.bsize:
+            i += 1
+        if i == self.bsize:
+            return 0
+        visited = set()
+        stack = deque()
+        stack.append(i)
+
+        while len(stack) > 0:
+            cur = stack.pop()
+            visited.add(cur)
+            add_neigh()
+        return len(visited)
+
+    def set_win(self):
+        counts = {
+            self.W: 0,
+            self.B: 0,
+            self.E: 0
+            }
+        for i in range(self.bsize):
+            counts[self.board[i]] += 1
+
+        Wblob = self.blob(self.W) 
+        Bblob = self.blob(self.B) 
+
+        W = Wblob == counts[self.W]
+        B = Bblob == counts[self.B]
+
+        print(Wblob, Bblob)
+        if W:
+            if B:
+                #check if equal or greater blob size
+                if Wblob > Bblob:
+                    #W wins
+                    self.status[0] += 1
+                    self.status[1]  = self.W
+                elif Bblob > Wblob:
+                    #B wins
+                    self.status[0] += 1
+                    self.status[1]  = self.B
+                else:
+                    #draw
+                    self.status[0] = 2
+            else:
+                #W wins
+                self.status[0] += 1
+                self.status[1]  = self.W
+        else:
+            if B:
+                #B wins
+                self.status[0] += 1
+                self.status[1]  = self.B
+
 
     def play(self, play_start, play_end):
         my = self.__copy__()
-        if self.status[0] != 0: # then game ended
-            return my
-        if self.board[play_start] != self.turn:
-            return my
         if not self.isValid(play_start, play_end):
             return my
         # if valide move
@@ -264,6 +344,7 @@ class Loa():
         self.turn *= -1
 
         #compute win state
+        self.set_win()
 
 
 
@@ -283,11 +364,17 @@ class Loa():
 
 l = Loa()
 print(l)
-ll = l.play(1, 7)
+ll = l.play(1, 2)
 print(ll)
-ll = ll.play(54, 0)
+ll = ll.play(3, 0)
 print(ll)
-ll = ll.play(7, 0)
+ll = ll.play(7, 8)
 print(ll)
-lll = ll.play(1, 7)
-print(lll)
+ll = ll.play(0, 2)
+print(ll)
+ll = ll.play(8, 7)
+print(ll)
+# ll = ll.play(48, 0)
+# print(ll)
+# ll = ll.play(7, 0)
+# print(ll)
