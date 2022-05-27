@@ -3,6 +3,7 @@ from collections import deque
 # from copy import copy
 
 class Loa():
+    # boards are square
 
     B = -1
     E = 0
@@ -43,7 +44,18 @@ class Loa():
         # 1 - one wins; check 2nd pos
         # 2 - draw
 
+        # compute lists
+        # lists with sets inside
+        #    sets -> repetitive positions wont appear twice,
+        #             and lookup position will be faster
+        self.Horizontal_list = []
+        self.Vertical_list = []
+        self.Diagonal1_list = []
+        self.Diagonal2_list = []
+        self._lists()
         # also check win here to fill blanks
+        # on small board, may start on win state
+        self.set_win()
         pass
 
     def __copy__(self):
@@ -54,6 +66,12 @@ class Loa():
         clone.status = self.status
         clone.round = self.round
         clone.board = np.copy(self.board)
+
+        # this wont change between plays, cuz board size is the same
+        clone.Horizontal_list = self.Horizontal_list 
+        clone.Vertical_list = self.Vertical_list
+        clone.Diagonal1_list = self.Diagonal1_list 
+        clone.Diagonal2_list = self.Diagonal2_list 
         return clone
 
     def __eq__(self, other):
@@ -76,7 +94,7 @@ class Loa():
 
 
     def _pos(self, x, y):
-        if x < 0 or x >= self.bsize or y < 0 or y >= self.bsize:
+        if x < 0 or x >= self.size or y < 0 or y >= self.size:
             return -1
         return (self.size * y) + x
 
@@ -89,9 +107,83 @@ class Loa():
         x += i
         y += j
 
-        if x < 0 or x >= self.bsize or y < 0 or y >= self.bsize:
-            return -1
+        # if x < 0 or x >= self.bsize or y < 0 or y >= self.bsize:
+        #     return -1
         return self._pos(x, y)
+
+    def _lists(self):
+        # self.Horizontal_list
+        H = []
+        for y in range(self.size):
+            s = set()
+            for x in range(self.size):
+                pos = self._pos(x, y)
+                s.add(pos)
+            H.append(s)
+        self.Horizontal_list = H
+
+        # self.Vertical_list
+        V = []
+        for x in range(self.size):
+            s = set()
+            for y in range(self.size):
+                pos = self._pos(x, y)
+                s.add(pos)
+            V.append(s)
+        self.Vertical_list = V
+
+        # self.Diagonal1_list
+        D1 = []
+        # left numbers first
+        for start_pos in range(0, self.bsize, self.size):
+            s = set()
+            for i in range(self.size):
+                pos = self._pos_math(start_pos, i, i)
+                if pos < 0:
+                    break
+                s.add(pos)
+            D1.append(s)
+
+        # then first row
+        for start_pos in range(1, self.size):
+            s = set()
+            for i in range(self.size):
+                pos = self._pos_math(start_pos, i, i)
+                if pos < 0:
+                    break
+                s.add(pos)
+            D1.append(s)
+        self.Diagonal1_list = D1
+
+        # self.Diagonal2_list
+        D2 = []
+        # first top row / not last pos, done later
+        for start_pos in range(self.size -1):
+            s = set()
+            for i in range(self.size):
+                pos = self._pos_math(start_pos, -i, i)
+                if pos < 0:
+                    break
+                s.add(pos)
+            D2.append(s)
+
+        # then right collumn
+        for start_pos in range(self.size -1, self.bsize, self.size):
+            s = set()
+            for i in range(self.size):
+                pos = self._pos_math(start_pos, -i, i)
+                if pos < 0:
+                    break
+                s.add(pos)
+            D2.append(s)
+        self.Diagonal2_list = D2
+
+        # print
+        # print("H ", self.Horizontal_list)
+        # print("V ", self.Vertical_list)
+        print("D1", self.Diagonal1_list)
+        print("D2", self.Diagonal2_list)
+        pass
 
     def _pieces(self, n):
         if n == 1:
@@ -287,6 +379,7 @@ class Loa():
         return len(visited)
 
     def set_win(self):
+        # also check for no more valid moves
         counts = {
             self.W: 0,
             self.B: 0,
@@ -330,6 +423,7 @@ class Loa():
     def play(self, play_start, play_end):
         my = self.__copy__()
         if not self.isValid(play_start, play_end):
+            # also check if no moves left
             return my
         # if valide move
         my._play(play_start, play_end)
@@ -364,16 +458,16 @@ class Loa():
 
 l = Loa()
 print(l)
-ll = l.play(1, 2)
-print(ll)
-ll = ll.play(3, 0)
-print(ll)
-ll = ll.play(7, 8)
-print(ll)
-ll = ll.play(0, 2)
-print(ll)
-ll = ll.play(8, 7)
-print(ll)
+##ll = l.play(1, 2)
+##print(ll)
+##ll = ll.play(3, 0)
+##print(ll)
+##ll = ll.play(7, 8)
+##print(ll)
+##ll = ll.play(0, 2)
+##print(ll)
+##ll = ll.play(8, 7)
+##print(ll)
 # ll = ll.play(48, 0)
 # print(ll)
 # ll = ll.play(7, 0)
