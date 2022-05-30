@@ -25,6 +25,7 @@ class Loa():
         defaults = {
             'size': 8,
             'turn': self.B,
+            'single': False,
             'board': self.make_board(8) # np.array
             }
         options = options or defaults
@@ -32,6 +33,7 @@ class Loa():
         self.size = options['size']
         self.bsize = self.size * self.size
         self.turn = options['turn']
+        self.single = options['single']
         self.board = options['board']
         self.round = 0
         # status:
@@ -59,6 +61,7 @@ class Loa():
         clone.size = self.size
         clone.bsize = self.bsize
         clone.turn = self.turn
+        clone.single = self.single
         clone.status = self.status
         clone.round = self.round
         clone.board = np.copy(self.board)
@@ -204,7 +207,7 @@ class Loa():
         buff += "\nStatus: "
         buff += str(self.status[0])
         buff += ", "
-        buff += self._pieces(self.status[0])
+        buff += self._pieces(self.status[1])
         buff += "\n__________________"
         return buff
     
@@ -297,7 +300,7 @@ class Loa():
                         stack.append(newpos)
 
         i = 0
-        while self.board[i] != turn and i < self.bsize:
+        while i < self.bsize and self.board[i] != turn:
             i += 1
         if i == self.bsize:
             return 0
@@ -321,11 +324,21 @@ class Loa():
         for i in range(self.bsize):
             counts[self.board[i]] += 1
 
+        if self.single:
+            turn = self.turn
+            count = counts[turn]
+            blob = self.blob(turn)
+            if count == blob:
+                self.status[0] = 1
+                self.status[1] = self.turn
+            return
+
         Wblob = self.blob(self.W) 
         Bblob = self.blob(self.B) 
 
         W = Wblob == counts[self.W]
         B = Bblob == counts[self.B]
+
 
         if W and B:
             self.status[0] = 1
@@ -380,7 +393,8 @@ class Loa():
         self.board[play_end] = self.turn
 
         self.round += 1
-        self.turn *= -1
+        if not self.single:
+            self.turn *= -1
 
         #compute win state
         self.set_win()
