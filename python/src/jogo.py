@@ -235,6 +235,10 @@ class Loa():
             count = len(the_list) - l.count(self.E)
             return count
 
+        def countHorizontal():
+            count = _count(H_)
+            return count
+
         def countVertical():
             count = _count(V_)
             return count
@@ -386,6 +390,42 @@ class Loa():
         # if valide move
         my._play(play_start, play_end)
         return my
+
+    def play_relative(self, piece_order, direction):
+        # directions is a string
+        # directions up, right, down, left
+        pieces = np.where(self.board == self.turn)[0]
+        piece = pieces[piece_order]
+        end_pos = -1
+
+        def _count(the_list):
+            l = list(map(lambda pos: self.board[pos], the_list))
+            count = len(the_list) - l.count(self.E)
+            return count
+
+        if direction == "up":
+            V_  = list(filter(lambda x: piece in x, self.Vertical_list))[0]
+            count = _count(V_)
+            step = self.size * count
+            end_pos = piece - step
+            
+        elif direction == "down":
+            V_  = list(filter(lambda x: piece in x, self.Vertical_list))[0]
+            count = _count(V_)
+            step = self.size * count
+            end_pos = piece + step
+
+        elif direction == "right":
+            H_  = list(filter(lambda x: piece in x, self.Horizontal_list))[0]
+            count = _count(H_)
+            end_pos = piece + count
+
+        elif direction == "left":
+            H_  = list(filter(lambda x: piece in x, self.Horizontal_list))[0]
+            count = _count(H_)
+            end_pos = piece - count
+
+        return self.play(piece, end_pos)
 
     def _play(self, play_start, play_end):
         #just play
