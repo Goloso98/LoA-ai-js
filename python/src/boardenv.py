@@ -27,13 +27,15 @@ class BoardEnv(gym.Env):
             "single": True,
             "board": board }
 
+    moves_all = ["up", "right", "down", "left", "d1up", "d1down", "d2up", "d2down"]
+
     def __init__(self):
         self.size = BoardEnv.options["size"]
         super(BoardEnv, self).__init__()
         # self.changes = rand( int(.1*self.size*self.size), int(.6*self.size*self.size) )
         # self.changes = int(.2*self.size*self.size)
         self.changes = 12
-        self.action_space = spaces.Discrete(self.changes * 4)
+        self.action_space = spaces.Discrete(self.changes * len(BoardEnv.moves_all))
         self.observation_space = spaces.Box(low = -1, high = 1, shape = (self.size * self.size,), dtype = np.int64)
         # self.Loa = Loa(options = BoardEnv.options)
 
@@ -45,8 +47,9 @@ class BoardEnv(gym.Env):
 
     def step(self, action):
         # action = piece(in array/board order) * move(up, right, down, left)
-        moves = ["up", "right", "down", "left", "d1up", "d1down", "d2up", "d2down"]
-        piece = action // len(moves) # 4 possible moves
+        # moves = ["up", "right", "down", "left", "d1up", "d1down", "d2up", "d2down"]
+        moves = BoardEnv.moves_all
+        piece = action // len(moves)
         move = moves[action % len(moves)]
         # print(self.Loa)
 
