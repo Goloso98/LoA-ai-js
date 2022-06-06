@@ -35,11 +35,10 @@ class BoardEnv(gym.Env):
         print(self.Loa)
 
         self.Loa = self.Loa.play_relative(piece, move)
-        print(self.Loa.status[0], "ola")
         win = self.Loa.status[0] != 0 # TODO : verify status[1]
 
         board = self.Loa.board
-        reward = 0
+        reward = -1
         done = win
         info = {}
 
