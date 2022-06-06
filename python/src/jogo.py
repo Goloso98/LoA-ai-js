@@ -425,6 +425,26 @@ class Loa():
             count = _count(H_)
             end_pos = piece - count
 
+        elif direction == "d1up":
+            D1_ = list(filter(lambda x: piece in x, self.Diagonal1_list))[0]
+            count = _count(D1_)
+            end_pos = piece + count
+
+        elif direction == "d1down":
+            D1_ = list(filter(lambda x: piece in x, self.Diagonal1_list))[0]
+            count = _count(D1_)
+            end_pos = piece - count
+
+        elif direction == "d2up":
+            D2_ = list(filter(lambda x: piece in x, self.Diagonal2_list))[0]
+            count = _count(D2_)
+            end_pos = piece + count
+
+        elif direction == "d2down":
+            D2_ = list(filter(lambda x: piece in x, self.Diagonal2_list))[0]
+            count = _count(D2_)
+            end_pos = piece - count
+
         return self.play(piece, end_pos)
 
     def _play(self, play_start, play_end):

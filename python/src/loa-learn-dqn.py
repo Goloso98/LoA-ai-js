@@ -19,10 +19,10 @@ env.reset()
 
 model = DQN('MlpPolicy', env, verbose=1, tensorboard_log=logdir)
 
-TIMESTEPS = 10000
+TIMESTEPS = 100000
 iters = 0
 
-for i in range(30):
+for i in range(100):
 	iters += 1
 	model.learn(total_timesteps=TIMESTEPS, reset_num_timesteps=False, tb_log_name=f"DQN")
 	model.save(f"{models_dir}/{TIMESTEPS*iters}")
